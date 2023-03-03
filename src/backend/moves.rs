@@ -4,6 +4,8 @@
 use std::fmt::{self, Debug};
 use std::fmt::Write as FmtWrite;
 
+use super::ChessError;
+
 static ASCII_UPPER: [char; 26] = [
     'A', 'B', 'C', 'D', 'E', 
     'F', 'G', 'H', 'I', 'J', 
@@ -25,7 +27,7 @@ pub struct Move{pub origin: Field, pub target: Field, hostile:bool, castle:Optio
 #[test]
 fn test_move_compare(){
     let move_a = Move::new(Field(2, 2), Field(4, 4));
-    let move_b = Move::new(Field(2, 3), Field(4, 4));
+    let move_b = Move::new(Field(2, 2), Field(4, 4));
     
     assert!(move_a==move_b);
     assert_eq!(move_a,move_b);
@@ -53,7 +55,13 @@ impl fmt::Debug for Field{
 }
 
 impl Field{
-    pub fn add_vec(&self, other:(u8,u8)) -> Self{
-        Field(usize::try_from(self.0 as u8 +other.0), (self.1 as u8 +other.1) as usize)
+    pub fn add_vec(&self, other:(u8,u8)) -> Result<Self, ChessError>{
+        let new_x = (self.0 as u8 +other.0) as usize;
+        let new_y = (self.1 as u8 +other.1) as usize;
+        if (new_x>=0 && new_x<=8) && (new_y>=0 && new_y<=8) {
+            return Ok(Field(new_x,new_y));
+        } else {
+            return Err(ChessError::OutOfBounds);
+        }
     }
 }

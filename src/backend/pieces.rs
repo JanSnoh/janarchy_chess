@@ -60,4 +60,11 @@ impl Piece{
     }
 }
 
-
+impl PieceColor{
+    pub fn opposite(&self) -> Self{
+        match self{
+            PieceColor::Black => PieceColor::White,
+            PieceColor::White => PieceColor::Black,
+        }
+    }
+}

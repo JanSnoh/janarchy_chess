@@ -2,11 +2,15 @@
 
 pub mod pieces;
 pub mod moves;
+pub mod move_logic; 
+
 use core::fmt;
 use std::{ops::{Index, IndexMut}, process::Output, collections::HashSet, array};
-use crate::DEFAULT_GAME_FEN;
 
+use crate::{DEFAULT_GAME_FEN, backend::pieces::PieceColor};
 use self::moves::{Move,Field, Castling};
+
+
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
@@ -20,10 +24,12 @@ pub(crate) struct GameState{
     legal_moves: Option<[Vec<Move>; 8*8]>
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ChessError{
     MoveError(Move),
-    LoadError(String)
+    LoadError(String),
+    OutOfBounds,
+    EmptyMoveOrigin
 }
 
 impl Default for GameState{
@@ -118,15 +124,6 @@ fn board_from_fen_str(raw_data: &Vec<&str>) -> Result<[Option<pieces::Piece>; 64
     Ok(field_array)
 } 
 
-impl GameState{
-    pub fn moves_from_square(&self, origin: &Field) -> Vec<Move>{
-        todo!();
-    }
-
-    pub fn legal_moves(&mut self) -> [Vec<Move>; 64] {
-        array::from_fn(|i| self.moves_from_square(&Field(i%8, i/8)))
-    }
-}
 
 impl Index<Field> for GameState{
     type Output = Option<pieces::Piece>;
@@ -149,10 +146,10 @@ impl IndexMut<Field> for GameState{
 impl fmt::Display for ChessError{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self{
-            
             ChessError::MoveError(mov) => write!(f, "Move '{}' is invalid!",mov.to_str()),
             ChessError::LoadError(msg) => write!(f, "{}",msg),
+            ChessError::OutOfBounds => write!(f, "Field is out of Bounds!"),
+            ChessError::EmptyMoveOrigin => write!(f, "Can't move out of an empty Square")
         }
     }
 }
-
