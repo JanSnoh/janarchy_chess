@@ -1,46 +1,55 @@
-use std::array;
-use crate::{DEFAULT_GAME_FEN, backend::{GameState, pieces::{Piece,PieceColor,PieceType},moves::{Field,Move},ChessError}};
+use std::{array, slice::Iter, alloc::System};
+use crate::{DEFAULT_GAME_FEN, backend::{GameState, pieces::{Piece,PieceColor,PieceType,},moves::{Field,Move},ChessError}};
+
 
 
 impl GameState{
     pub fn moves_from_square(&self, origin: Field) -> Result<Vec<Move>,ChessError>{
-        let moves = Vec::new();
+        let mut moves = Vec::new();
         let movee = self[origin].ok_or(ChessError::EmptyMoveOrigin)?;
 
-        pub(crate) fn add_moves_in_direction(game_state: &GameState, origin: Field, dir: (u8,u8), own_color: PieceColor) -> Vec<Move>{
-            let mut direction_moves = Vec::new();
-            //let next_sq: Field = origin.add_vec(dir);
-            let mut step = dir;
-            while let Ok(next_sq) = origin.add_vec(step){
-                step=(step.0*2,step.1*2);
-                direction_moves.push(Move::new(origin, next_sq));
-                match game_state[next_sq] {
-                    Some(Piece{color, ..}) if color == own_color => {break;},
-                    Some(Piece{..}) => {
-                        direction_moves.push(Move::new(origin, next_sq)); 
-                        break;},
-                    None => direction_moves.push(Move::new(origin, next_sq)),
-                }
+        type Dir = (i8,i8);
+        type DirIter<'a> = Iter<'a,Dir>;
+        
+
+        fn move_if_doable(game_state: &GameState, origin: Field, dir:&Dir) -> Option<Move>{
+            let target = origin.add_vec(*dir).ok()?;
+            let res = Move::new(origin, target);
+            if game_state.move_is_doable(&res) {
+                Some(res)
+            } else {
+                None
             }
-            direction_moves
-        }
+        } 
+
+        let mut add_dirs = move |dirs: DirIter, moves: &mut Vec<Move>| dirs.
+            for_each(|dir| moves.append(
+            &mut moves_in_direction(self, origin, *dir, movee.color)));
 
 
+        //remove when done with copying to pieces/behaviors
         match movee.piece_type{
-            PieceType::King => todo!(),
-            PieceType::Queen => todo!(),
-            PieceType::Bishop => todo!(),
+            //directional moves
+            PieceType::Bishop => add_dirs(DIAGONALS.iter(), &mut moves),
+            PieceType::Rook => add_dirs(HORIZONTALS.iter(), &mut moves),
+            PieceType::Queen => add_dirs(ALL_DIRS.iter(),&mut moves),
+            PieceType::Empty => panic!("deprecated"),
+            //"special" moves
+            PieceType::King => moves.append(&mut ALL_DIRS.iter().map(|dir|move_if_doable(self, origin, dir)).
+                filter_map(|x| x).collect()),
             PieceType::Knight => todo!(),
-            PieceType::Rook => todo!(),
             PieceType::Pawn => todo!(),
-            PieceType::Empty => panic!(),
+            
         }
-    
-        todo!("test{:?}",origin);
+        
+
+
         Ok(moves)
     }
 
     pub fn legal_moves(&mut self) -> [Vec<Move>; 64] {
+        
         array::from_fn(|i| self.moves_from_square(Field(i%8, i/8)).unwrap_or(Vec::new()))
     }
 }
+

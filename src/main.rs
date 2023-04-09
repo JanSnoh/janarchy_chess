@@ -4,6 +4,7 @@
 //use crate::backend::moves::Field;
 
 use std::{io, process::ExitCode};
+use jkfunctools;
 use backend::ChessError;
 use backend::pieces::PieceColor;
 mod frontend;

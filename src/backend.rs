@@ -48,7 +48,7 @@ impl Default for GameState{
 
 impl GameState{
     ///A move is doable if there is a piece to move, and it doesn't land on an ally square except special moves
-    fn move_is_doable(&self, m: Move) -> bool{
+    fn move_is_doable(&self, m: &Move) -> bool{
         let (origin,destination) = m.origin_and_destination();
         //exceptions are moves in which a piece can move onto an ally piece
         let exception = false;
@@ -65,35 +65,24 @@ impl GameState{
     
     pub fn apply_move(&mut self, move_in_question: Move) -> Result<(), ChessError> {
         let (origin,destination) = move_in_question.origin_and_destination();
-        let piece = match self[origin]{
-            Some(piece) => Ok(piece),
-            None => return Err(ChessError::MoveError(move_in_question)),
-        }?;
-        match &mut self[destination]{
-            //Square is Empty
-            None => self[destination]=Some(piece),
-            //Square is Occupied
-            Some(targ) => if targ.color==piece.color{
-                return Err(ChessError::MoveError(move_in_question));
-            } else{
-                self[destination]=Some(piece)
-            },
-        }
-        self[origin].take();
-        self[origin]=None;
+        let piece = self[origin].ok_or(ChessError::EmptyMoveOrigin)?;
+
+        if !self.move_is_doable(&move_in_question) {return Err(ChessError::MoveError(move_in_question))}
+
+        self[destination] = self[origin].take();
+        self.move_end();
         Ok(())
     }
     
     fn move_end(&mut self){
-        self.turn_color = match self.turn_color{
-            pieces::PieceColor::Black => pieces::PieceColor::White,
-            pieces::PieceColor::White => pieces::PieceColor::Black,
-        }
+        self.turn_color = self.turn_color.opposite();
     }
-
+    
     pub fn from_fen(s: &str) -> Result<Self,ChessError>{
-        //Loads a GameState from a Forsyth–Edwards Notation string.
-        //example string: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        //!Loads a GameState from a Forsyth–Edwards Notation string.
+        //! 
+        //!example string: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
         let raw_data = s.split(' ').collect::<Vec<&str>>();
         let field_array = board_from_fen_str(&raw_data)?;
         let whose_turn = if raw_data[1]=="w" {pieces::PieceColor::White} else {pieces::PieceColor::Black};

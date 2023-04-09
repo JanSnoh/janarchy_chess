@@ -5,3 +5,10 @@ version = 3
 [[package]]
 name = "janarchy_chess"
 version = "0.1.0"
+dependencies = [
+ "jkfunctools",
+]
+
+[[package]]
+name = "jkfunctools"
+version = "0.1.0"

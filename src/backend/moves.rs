@@ -55,11 +55,11 @@ impl fmt::Debug for Field{
 }
 
 impl Field{
-    pub fn add_vec(&self, other:(u8,u8)) -> Result<Self, ChessError>{
-        let new_x = (self.0 as u8 +other.0) as usize;
-        let new_y = (self.1 as u8 +other.1) as usize;
+    pub fn add_vec(&self, other:(i8,i8)) -> Result<Self, ChessError>{
+        let new_x = self.0 as i8 +other.0;
+        let new_y = self.1 as i8 +other.1;
         if (new_x>=0 && new_x<=8) && (new_y>=0 && new_y<=8) {
-            return Ok(Field(new_x,new_y));
+            return Ok(Field(new_x as usize,new_y as usize));
         } else {
             return Err(ChessError::OutOfBounds);
         }
