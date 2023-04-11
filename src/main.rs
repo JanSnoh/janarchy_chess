@@ -5,7 +5,7 @@
 
 use std::{io, process::ExitCode};
 use jkfunctools;
-use backend::ChessError;
+use backend::{ChessError, moves::*};
 use backend::pieces::PieceColor;
 mod frontend;
 mod backend;
@@ -67,4 +67,17 @@ fn debug_move() -> ExitCode{
     game_state.prnt(None);
     println!("{:#?}",game_state[b]);
     return ExitCode::SUCCESS;
+}
+
+#[test]
+fn debug_movegen() -> ExitCode{
+    let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
+        Ok(state) => state,
+        Err(_) => return ExitCode::FAILURE,
+    };
+    game_state.apply_move(Move::new(Field(0,0), Field(4,4)));
+    let generated_moves = game_state.moves_from(Field(4, 4));
+    println!("{:#?}", generated_moves);
+
+    ExitCode::SUCCESS
 }

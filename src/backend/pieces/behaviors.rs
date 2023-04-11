@@ -35,8 +35,7 @@ fn moves_in_direction(game_state: &GameState, origin: Field, dir: (i8,i8), own_c
     //let next_sq: Field = origin.add_vec(dir);
     let mut step = dir;
     while let Ok(next_sq) = origin.add_vec(step){
-        step=(step.0*2,step.1*2);
-        direction_moves.push(Move::new(origin, next_sq));
+        step=(step.0*2,step.1*2);        //This might be stupid why did I write this? Also too tired to test rn
         match game_state[next_sq] {
             Some(Piece{color, ..}) if color == own_color => {break;},
             Some(Piece{..}) => {
