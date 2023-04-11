@@ -10,7 +10,7 @@ use backend::pieces::PieceColor;
 mod frontend;
 mod backend;
 
-const DEFAULT_GAME_FEN: &str = "rnbqkbnr/pppppppp/8/1R6/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const DEFAULT_GAME_FEN: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 fn main() {
     let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
@@ -38,46 +38,51 @@ fn game_loop() -> io::Result<String>{
     Ok("yup".to_owned())
 }
         
+mod tests{
+    use super::*;
 
-#[allow(unused_variables)]
-#[test]
-fn test_from_fen(){
-    let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
-        Ok(state) => state,
-        Err(_) => panic!("Cannot make GameState from FEN"),
-    };
-}
+    #[allow(unused_variables)]
+    #[test]
+    fn test_from_fen(){
+        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
+            Ok(state) => state,
+            Err(_) => panic!("Cannot make GameState from FEN"),
+        };
+    }
 
-#[test]
-fn debug_move() -> ExitCode{
-    let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
-        Ok(state) => state,
-        Err(_) => return ExitCode::FAILURE,
-    };
+    #[test]
+    fn debug_move() -> ExitCode{
+        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
+            Ok(state) => state,
+            Err(_) => return ExitCode::FAILURE,
+        };
 
-    type Field = backend::moves::Field;
-    let a = backend::moves::Field(0,0);
-    let b = backend::moves::Field(1,3);
-    println!("{:#?}",game_state[b]);
-    let move_in_question = backend::moves::Move::new(a, b);
+        type Field = backend::moves::Field;
+        let a = backend::moves::Field(0,0);
+        let b = backend::moves::Field(1,3);
+        println!("{:#?}",game_state[b]);
+        let move_in_question = backend::moves::Move::new(a, b);
 
-    println!("{}",move_in_question.to_str());
-    assert!(game_state.apply_move(move_in_question).is_ok());
-    println!("after Move: ");
-    game_state.prnt(None);
-    println!("{:#?}",game_state[b]);
-    return ExitCode::SUCCESS;
-}
+        println!("{}",move_in_question.to_str());
+        assert!(game_state.apply_move(move_in_question).is_ok());
+        println!("after Move: ");
+        game_state.prnt(None);
+        println!("{:#?}",game_state[b]);
+        return ExitCode::SUCCESS;
+    }
 
-#[test]
-fn debug_movegen() -> ExitCode{
-    let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
-        Ok(state) => state,
-        Err(_) => return ExitCode::FAILURE,
-    };
-    game_state.apply_move(Move::new(Field(0,0), Field(4,4)));
-    let generated_moves = game_state.moves_from(Field(4, 4));
-    println!("{:#?}", generated_moves);
+    #[test]
+    fn debug_movegen() -> ExitCode{
+        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN){
+            Ok(state) => state,
+            Err(_) => return ExitCode::FAILURE,
+        };
+        game_state.apply_move(Move::new(Field(0,0), Field(4,4)));
+        let start = std::time::Instant::now();
+        let generated_moves = game_state.moves_from(Field(4, 4));
+        println!("generating moves took {:#?} ", start.elapsed());
+        println!("{:#?}", generated_moves);
 
-    ExitCode::SUCCESS
+        ExitCode::SUCCESS
+    }
 }
