@@ -64,4 +64,6 @@ impl Field{
             return Err(ChessError::OutOfBounds);
         }
     }
+
+
 }

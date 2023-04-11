@@ -10,7 +10,6 @@ use backend::pieces::PieceColor;
 mod frontend;
 mod backend;
 
-
 const DEFAULT_GAME_FEN: &str = "rnbqkbnr/pppppppp/8/1R6/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 fn main() {

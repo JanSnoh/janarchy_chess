@@ -2,7 +2,7 @@
 
 pub mod pieces;
 pub mod moves;
-pub mod move_logic; 
+//pub mod move_logic; 
 
 use core::fmt;
 use std::{ops::{Index, IndexMut}, process::Output, collections::HashSet, array};
@@ -14,7 +14,7 @@ use self::moves::{Move,Field, Castling};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
-pub(crate) struct GameState{
+pub struct GameState{
     pub fields: [Option<pieces::Piece>;8*8],
     turn_color: pieces::PieceColor,
     castling_options: HashSet<Castling>,//CASTLING
@@ -65,8 +65,8 @@ impl GameState{
     
     pub fn apply_move(&mut self, move_in_question: Move) -> Result<(), ChessError> {
         let (origin,destination) = move_in_question.origin_and_destination();
-        let piece = self[origin].ok_or(ChessError::EmptyMoveOrigin)?;
-
+        
+        if let None = self[origin] {return Err(ChessError::EmptyMoveOrigin)}
         if !self.move_is_doable(&move_in_question) {return Err(ChessError::MoveError(move_in_question))}
 
         self[destination] = self[origin].take();
@@ -77,7 +77,17 @@ impl GameState{
     fn move_end(&mut self){
         self.turn_color = self.turn_color.opposite();
     }
-    
+    fn contains_field(&self, Field(ref x,ref y): Field) -> bool {
+        (0..8).contains(x) && (0..8).contains(y)
+    }
+    pub fn moves_from(&self, origin: Field) -> Result<Vec<Move>,ChessError>{
+        let movee = self[origin].ok_or(ChessError::EmptyMoveOrigin)?;
+        
+        let move_generator = pieces::piece_behavior(movee.piece_type);
+        Ok(move_generator(self, origin))
+    }
+
+
     pub fn from_fen(s: &str) -> Result<Self,ChessError>{
         //!Loads a GameState from a Forsyth–Edwards Notation string.
         //! 
