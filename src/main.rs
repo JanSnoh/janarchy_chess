@@ -78,6 +78,7 @@ mod tests{
             Err(_) => return ExitCode::FAILURE,
         };
         game_state.apply_move(Move::new(Field(0,0), Field(4,4)));
+        game_state.prnt(None);
         let start = std::time::Instant::now();
         let generated_moves = game_state.moves_from(Field(4, 4));
         println!("generating moves took {:#?} ", start.elapsed());
