@@ -65,5 +65,9 @@ impl Field{
         }
     }
 
-
+}
+impl From<usize> for Field{
+    fn from(value: usize) -> Self {
+        Field(value%8, value/8)
+    }
 }
