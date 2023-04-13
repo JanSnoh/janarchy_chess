@@ -109,8 +109,10 @@ impl GameState {
             .iter()
             .enumerate()
             .filter(|(_, x)| matches!(x, Some(x) if x.color==side))
-            .map(|(i, x)| i);
-        Vec::new()
+            .map(|(i, x)| Field::from(i))
+            .filter_map(|sq| self.moves_from(sq).ok())
+            .flatten()
+            .collect()
     }
 
     pub fn from_fen(s: &str) -> Result<Self, ChessError> {
@@ -135,7 +137,10 @@ impl GameState {
         })
     }
 
-    fn iter_squares() {}
+    fn iter_squares() -> impl Iterator<Item = Field>{
+        (0..8*8)
+        .map(|x|Field::from(x))
+    }
 }
 
 fn board_from_fen_str(raw_data: &Vec<&str>) -> Result<[Option<pieces::Piece>; 64], ChessError> {
