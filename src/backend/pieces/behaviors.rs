@@ -23,6 +23,7 @@ pub fn piece_behavior(piece: PieceType) -> Behavior{
 const HORIZONTALS:[(i8,i8);4]=   [(1,0),(0,-1),(-1,0),(0,1)];
 const DIAGONALS:[(i8,i8);4]  =   [(1,1),(1,-1),(-1,1),(-1,-1)];
 const ALL_DIRS:[(i8,i8);8]   =   [(1,1),(1,-1),(-1,1),(-1,-1),  (1,0),(0,-1),(-1,0),(0,1)];
+const L_SHAPES:[(i8,i8);8]   =   [(2,1),(2,-1),(-2,1),(-2,-1),  (1,2),(2,-1),(-1,2),(2,1)];
 const NO_DIR:[(i8,i8);0]     =   [];
  
 
@@ -73,7 +74,9 @@ fn rook_moves(game_state: &GameState, origin: Field) -> Vec<Move>{
         game_state[origin].unwrap().color)).flatten().collect()
 }
 #[allow(unused_variables)]
-fn knight_moves(game_state: &GameState, origin: Field) -> Vec<Move>   {todo![]}
+fn knight_moves(game_state: &GameState, origin: Field) -> Vec<Move>   {
+    L_SHAPES.iter().filter_map(|dir| origin.add_vec(*dir).ok()).map(|target| Move::new(origin, target)).collect()
+}
 fn pawn_moves(game_state: &GameState, origin: Field) -> Vec<Move>{
     match game_state[origin].unwrap().color {
         PieceColor::Black => if let Ok(x) = origin.add_vec((0,1)) 
