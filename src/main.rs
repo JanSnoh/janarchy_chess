@@ -60,7 +60,7 @@ mod tests {
         let a = backend::moves::Field(0, 0);
         let b = backend::moves::Field(1, 3);
         println!("{:#?}", game_state[b]);
-        let move_in_question = backend::moves::Move::new(a, b);
+        let move_in_question = backend::moves::Move::from_squares(a, b);
 
         println!("{}", move_in_question.to_str());
         assert!(game_state.apply_move(move_in_question).is_ok());
@@ -76,7 +76,7 @@ mod tests {
             Ok(state) => state,
             Err(_) => return ExitCode::FAILURE,
         };
-        game_state.apply_move(Move::new(Field(0, 0), Field(4, 4)));
+        game_state.apply_move(Move::from_squares(Field(0, 0), Field(4, 4)));
         game_state.prnt(None);
         let start = std::time::Instant::now();
         let generated_moves = game_state.moves_from(Field(4, 4));
@@ -84,5 +84,22 @@ mod tests {
         println!("{:#?}", generated_moves);
 
         ExitCode::SUCCESS
+    }
+
+    #[test]
+    fn all_possible_moves() -> ExitCode{
+        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN) {
+            Ok(state) => state,
+            Err(_) => return ExitCode::FAILURE,
+        };
+
+        game_state.prnt(None);
+        let start = std::time::Instant::now();
+        let generated_moves = game_state.possible_moves(PieceColor::White);
+        println!("generating moves took {:#?} ", start.elapsed());
+        println!("{:#?}", generated_moves);
+
+        ExitCode::SUCCESS
+
     }
 }

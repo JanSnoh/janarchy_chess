@@ -109,7 +109,7 @@ impl GameState {
             .iter()
             .enumerate()
             .filter(|(_, x)| matches!(x, Some(x) if x.color==side))
-            .map(|(i, x)| Field::from(i))
+            .map(|(i, _)| Field::from(i))
             .filter_map(|sq| self.moves_from(sq).ok())
             .flatten()
             .collect()

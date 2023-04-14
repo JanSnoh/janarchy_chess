@@ -23,8 +23,8 @@ pub enum Castling {
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct Move {
-    pub origin: Field,
-    pub target: Field,
+    origin: Field,
+    target: Field,
     hostile: bool,
     castle: Option<Castling>,
     knight_boost: bool,
@@ -32,21 +32,26 @@ pub struct Move {
 
 #[test]
 fn test_move_compare() {
-    let move_a = Move::new(Field(2, 2), Field(4, 4));
-    let move_b = Move::new(Field(2, 2), Field(4, 4));
+    let move_a = Move::from_squares(Field(2, 2), Field(4, 4));
+    let move_b = Move::from_squares(Field(2, 2), Field(4, 4));
 
     assert!(move_a == move_b);
     assert_eq!(move_a, move_b);
 }
 
 impl Move {
-    pub fn new(origin: Field, target: Field) -> Self {
+    pub fn new(origin: Field, target: Field, hostile:bool, castle: Option<Castling>, knight_boost: bool) -> Self {
+        Self {origin, target,hostile,castle, knight_boost}
+    }
+    pub fn from_squares(origin: Field, target: Field) -> Self {
         Self {
             origin,
             target,
             ..Default::default()
         }
     }
+    
+
     pub fn from_str(input: String) -> Option<Move> {
         todo!("test{:?}", input)
     }
@@ -59,25 +64,28 @@ impl Move {
     }
 }
 
-impl fmt::Debug for Field {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Square {}{}", ASCII_UPPER[(self.0) as usize], 8 - self.1)
-    }
-}
+
 
 impl Field {
     pub fn add_vec(&self, other: (i8, i8)) -> Result<Self, ChessError> {
         let new_x = self.0 as i8 + other.0;
         let new_y = self.1 as i8 + other.1;
-        if (new_x >= 0 && new_x <= 8) && (new_y >= 0 && new_y <= 8) {
+        if (new_x >= 0 && new_x < 8) && (new_y >= 0 && new_y < 8) {
             return Ok(Field(new_x as usize, new_y as usize));
         } else {
             return Err(ChessError::OutOfBounds);
         }
     }
 }
+
 impl From<usize> for Field {
     fn from(value: usize) -> Self {
         Field(value % 8, value / 8)
+    }
+}
+
+impl fmt::Debug for Field {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Square {}{}", ASCII_UPPER[(self.0) as usize], 8 - self.1)
     }
 }

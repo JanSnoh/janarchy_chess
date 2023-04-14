@@ -19,7 +19,7 @@ pub fn piece_behavior(piece: PieceType) -> Behavior {
             .concat()
         },
         PieceType::Bishop => bishop_moves,
-        PieceType::Knight => king_moves,
+        PieceType::Knight => knight_moves,
         PieceType::Rook => rook_moves,
         PieceType::Pawn => pawn_moves,
         PieceType::Empty => panic!("deprecated"),
@@ -45,10 +45,10 @@ const L_SHAPES: [(i8, i8); 8] = [
     (-2, 1),
     (-2, -1),
     (1, 2),
-    (2, -1),
+    (1, -2),
     (-1, 2),
-    (2, 1),
-];
+    (-1, -2),
+    ];
 const NO_DIR: [(i8, i8); 0] = [];
 
 //helper fn
@@ -62,18 +62,19 @@ fn moves_in_direction(
     //let next_sq: Field = origin.add_vec(dir);
     let mut step = dir;
     while let Ok(next_sq) = origin.add_vec(step) {
-        step = (step.0 * 2, step.1 * 2); //This might be stupid why did I write this? Also too tired to test rn
+        step = (step.0 + dir.0, step.1 + dir.1); //This might be stupid why did I write this? Also too tired to test rn
         match game_state[next_sq] {
             Some(Piece { color, .. }) if color == own_color => {
                 break;
             }
             Some(Piece { .. }) => {
-                direction_moves.push(Move::new(origin, next_sq));
+                direction_moves.push(Move::new(origin,next_sq,true,None,false));
                 break;
             }
-            None => direction_moves.push(Move::new(origin, next_sq)),
+            None => direction_moves.push(Move::from_squares(origin, next_sq)),
         }
     }
+    println!("From {origin:?} in direction of {dir:?} you can move {direction_moves:?}");
     direction_moves
 }
 
@@ -81,11 +82,12 @@ fn compose(f: BoxedBehavior, g: BoxedBehavior) -> BoxedBehavior {
     Box::new(move |game_state, origin| [f(game_state, origin), g(game_state, origin)].concat())
 }
 
-fn king_moves(_game_state: &GameState, origin: Field) -> Vec<Move> {
+fn king_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     ALL_DIRS
         .iter()
         .filter_map(|dir| origin.add_vec(*dir).ok())
-        .map(|x| Move::new(origin, x))
+        .map(|x| Move::from_squares(origin, x))
+        .filter(|mov| game_state.move_is_doable(mov))
         .collect()
 }
 fn bishop_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
@@ -98,8 +100,10 @@ fn bishop_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
 fn rook_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     HORIZONTALS
         .iter()
-        .map(|dir| moves_in_direction(game_state, origin, *dir, game_state[origin].unwrap().color))
+        .map(|dir| moves_in_direction(game_state, origin
+            , *dir, game_state[origin].unwrap().color))
         .flatten()
+        .filter(|mov| game_state.move_is_doable(mov))
         .collect()
 }
 #[allow(unused_variables)]
@@ -107,21 +111,22 @@ fn knight_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     L_SHAPES
         .iter()
         .filter_map(|dir| origin.add_vec(*dir).ok())
-        .map(|target| Move::new(origin, target))
+        .map(|target| Move::from_squares(origin, target))
+        .filter(|mov| game_state.move_is_doable(mov))
         .collect()
 }
 fn pawn_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     match game_state[origin].unwrap().color {
         PieceColor::Black => {
             if let Ok(x) = origin.add_vec((0, 1)) {
-                vec![Move::new(origin, x)]
+                vec![Move::from_squares(origin, x)]
             } else {
                 vec![]
             }
         }
         PieceColor::White => {
             if let Ok(x) = origin.add_vec((0, -1)) {
-                vec![Move::new(origin, x)]
+                vec![Move::from_squares(origin, x)]
             } else {
                 vec![]
             }
