@@ -10,6 +10,8 @@ use std::{io, process::ExitCode};
 mod backend;
 mod frontend;
 
+pub use backend::{GameState, moves::{Field,Move}};
+
 const DEFAULT_GAME_FEN: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 fn main() {
@@ -43,63 +45,42 @@ mod tests {
     #[allow(unused_variables)]
     #[test]
     fn test_from_fen() {
-        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN) {
-            Ok(state) => state,
-            Err(_) => panic!("Cannot make GameState from FEN"),
-        };
+        let mut game_state = backend::GameState::from_fen(DEFAULT_GAME_FEN).unwrap();
     }
 
     #[test]
-    fn debug_move() -> ExitCode {
-        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN) {
-            Ok(state) => state,
-            Err(_) => return ExitCode::FAILURE,
-        };
+    fn debug_move() {
+        let mut game_state = backend::GameState::from_fen(DEFAULT_GAME_FEN).unwrap();
 
-        type Field = backend::moves::Field;
-        let a = backend::moves::Field(0, 0);
-        let b = backend::moves::Field(1, 3);
+        let a = Field(0, 0);
+        let b = Field(1, 3);
         println!("{:#?}", game_state[b]);
-        let move_in_question = backend::moves::Move::from_squares(a, b);
+        let move_in_question = Move::from_squares(a, b);
 
         println!("{}", move_in_question.to_str());
         assert!(game_state.apply_move(move_in_question).is_ok());
         println!("after Move: ");
         game_state.prnt(None);
         println!("{:#?}", game_state[b]);
-        return ExitCode::SUCCESS;
     }
 
     #[test]
-    fn debug_movegen() -> ExitCode {
-        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN) {
-            Ok(state) => state,
-            Err(_) => return ExitCode::FAILURE,
-        };
-        game_state.apply_move(Move::from_squares(Field(0, 0), Field(4, 4)));
+    fn debug_movegen() {
+        let mut game_state = backend::GameState::from_fen(DEFAULT_GAME_FEN).unwrap();
+        game_state.apply_move(Move::from_squares(Field(0, 0), Field(4, 4))).unwrap();
         game_state.prnt(None);
         let start = std::time::Instant::now();
         let generated_moves = game_state.moves_from(Field(4, 4));
         println!("generating moves took {:#?} ", start.elapsed());
         println!("{:#?}", generated_moves);
-
-        ExitCode::SUCCESS
     }
 
     #[test]
-    fn all_possible_moves() -> ExitCode{
-        let mut game_state = match backend::GameState::from_fen(DEFAULT_GAME_FEN) {
-            Ok(state) => state,
-            Err(_) => return ExitCode::FAILURE,
-        };
+    fn all_possible_moves(){
+        let mut game_state = backend::GameState::from_fen(DEFAULT_GAME_FEN).unwrap();
 
         game_state.prnt(None);
-        let start = std::time::Instant::now();
         let generated_moves = game_state.possible_moves(PieceColor::White);
-        println!("generating moves took {:#?} ", start.elapsed());
         println!("{:#?}", generated_moves);
-
-        ExitCode::SUCCESS
-
     }
 }
