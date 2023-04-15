@@ -104,6 +104,12 @@ impl PieceColor {
             PieceColor::White => PieceColor::Black,
         }
     }
+    pub fn to_int(&self) -> i8 {
+        match self {
+            PieceColor::Black => 1,
+            PieceColor::White => -1,
+        }
+    }
 }
 
 mod behaviors;
