@@ -74,7 +74,6 @@ fn moves_in_direction(
             None => direction_moves.push(Move::from_squares(origin, next_sq)),
         }
     }
-    println!("From {origin:?} in direction of {dir:?} you can move {direction_moves:?}");
     direction_moves
 }
 
@@ -116,21 +115,30 @@ fn knight_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
         .collect()
 }
 fn pawn_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
-    match game_state[origin].unwrap().color {
-        PieceColor::Black => {
-            if let Ok(x) = origin.add_vec((0, 1)) {
-                vec![Move::from_squares(origin, x)]
-            } else {
-                vec![]
-            }
-        }
-        PieceColor::White => {
-            if let Ok(x) = origin.add_vec((0, -1)) {
-                vec![Move::from_squares(origin, x)]
-            } else {
-                vec![]
-            }
+    let color = game_state[origin].unwrap().color;
+    let mut res = Vec::new();
+    let at_start = origin.1 == ((8+2*color.to_int()) as usize)%8;
+    //straight moves
+    if let Ok(one_further) = origin.add_vec((0,color.to_int())) {
+        res.push(Move::from_squares(origin, one_further));
+        //double straight move
+        match origin.add_vec((0, color.to_int()*2)){ 
+            Ok(two_further) if at_start => {
+                res.push(Move::from_squares(origin, two_further));
+            },
+            _ => {}
         }
     }
+
+
+    //diagonal takes
+    res.extend(
+    [(-1, color.to_int()), (1, color.to_int())].into_iter()
+        .filter_map(|x|origin.add_vec(x).ok())
+        .filter(|target|game_state[*target]
+        .map_or(false, |p|p.color==color))
+        .map(|target| Move::new(origin, target, true, None, false)));
+    
+    res
 }
 //etc ...
