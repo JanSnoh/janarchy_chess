@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use std::fmt::Write as FmtWrite;
 use std::fmt::{self, Debug};
 
 use super::ChessError;

@@ -1,7 +1,8 @@
-use crate::backend;
-use crate::backend::pieces::PieceColor;
-impl backend::GameState {
-    pub(crate) fn prnt(&self, perspective: Option<PieceColor>) {
+use crate::pieces::PieceColor;
+use crate::backend::pieces::Piece;
+
+impl crate::GameState {
+    pub fn print(&self, perspective: Option<PieceColor>) {
         type BoxedIter = Box<dyn Iterator<Item = usize>>;
         //define Iterator to loop through squares appropriately based on perspective
         fn iterate_perspective(perspective: Option<PieceColor>) -> BoxedIter {
@@ -18,10 +19,11 @@ impl backend::GameState {
                 s = format!(
                     "{} {:#?}",
                     s,
-                    backend::pieces::Piece::to_char(&self.fields[i * 8 + j])
+                    Piece::to_char(&self.fields[i * 8 + j])
                 );
             }
             println!("{}", s);
         }
     }
 }
+//ctx.debug_painter().circle(egui::Pos2 { x: 400.0, y: 400.0 }, 100.0, WHITE, Stroke{ width: 5.0, color: BLACK });

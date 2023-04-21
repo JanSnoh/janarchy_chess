@@ -1,12 +1,12 @@
 use crate::backend::{
     moves::{Field, Move},
     pieces::{Piece, PieceColor, PieceType},
-    ChessError, GameState,
+    GameState,
 };
 
 pub type Behavior = fn(&GameState, Field) -> Vec<Move>;
-pub type BehaviorTrait = dyn Fn(&GameState, Field) -> Vec<Move>;
-pub type BoxedBehavior = Box<BehaviorTrait>;
+//pub type BehaviorTrait = dyn Fn(&GameState, Field) -> Vec<Move>;
+//pub type BoxedBehavior = Box<BehaviorTrait>;
 
 pub fn piece_behavior(piece: PieceType) -> Behavior {
     match piece {
@@ -49,7 +49,7 @@ const L_SHAPES: [(i8, i8); 8] = [
     (-1, 2),
     (-1, -2),
     ];
-const NO_DIR: [(i8, i8); 0] = [];
+
 
 //helper fn
 fn moves_in_direction(
@@ -77,9 +77,6 @@ fn moves_in_direction(
     direction_moves
 }
 
-fn compose(f: BoxedBehavior, g: BoxedBehavior) -> BoxedBehavior {
-    Box::new(move |game_state, origin| [f(game_state, origin), g(game_state, origin)].concat())
-}
 
 fn king_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     ALL_DIRS

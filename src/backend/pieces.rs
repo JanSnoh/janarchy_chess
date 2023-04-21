@@ -1,6 +1,4 @@
-use std::{alloc::System, time::SystemTime};
-
-pub use behaviors::{piece_behavior, Behavior};
+pub(crate) use behaviors::{piece_behavior};
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq, Clone, Copy)]

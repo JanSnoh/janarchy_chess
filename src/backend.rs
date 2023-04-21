@@ -6,10 +6,8 @@ pub mod pieces;
 
 use core::fmt;
 use std::{
-    array,
     collections::HashSet,
     ops::{Index, IndexMut},
-    process::Output,
 };
 
 use self::moves::{Castling, Field, Move};
@@ -95,7 +93,7 @@ impl GameState {
     fn move_end(&mut self) {
         self.turn_color = self.turn_color.opposite();
     }
-    fn contains_field(&self, Field(ref x, ref y): Field) -> bool {
+    pub fn contains_field(&self, Field(ref x, ref y): Field) -> bool {
         (0..8).contains(x) && (0..8).contains(y)
     }
     pub fn moves_from(&self, origin: Field) -> Result<Vec<Move>, ChessError> {
@@ -137,7 +135,7 @@ impl GameState {
         })
     }
 
-    fn iter_squares() -> impl Iterator<Item = Field>{
+    pub fn iter_squares() -> impl Iterator<Item = Field>{
         (0..8*8)
         .map(|x|Field::from(x))
     }
