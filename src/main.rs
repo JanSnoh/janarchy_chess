@@ -18,16 +18,13 @@ fn main() {
     //"abcdefg".chars().map(|x| x as usize-'a' as usize).map(|x| println!("{}",x)).for_each(drop);
 }
 
-fn start_game_loop() -> io::Result<String> {
-    loop {
-        game_loop()?;
-    }
-}
 
 fn game_loop() -> io::Result<String> {
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input)?;
+    loop{
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input)?;
 
+    }
     Ok("yup".to_owned())
 }
 

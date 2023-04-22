@@ -1,5 +1,5 @@
 use crate::pieces::PieceColor;
-use crate::backend::pieces::Piece;
+use crate::game::pieces::Piece;
 
 impl crate::GameState {
     pub fn print(&self, perspective: Option<PieceColor>) {

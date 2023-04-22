@@ -1,5 +1,7 @@
 pub(crate) use behaviors::{piece_behavior};
 
+mod behaviors;
+
 #[allow(dead_code)]
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum PieceColor {
@@ -109,5 +111,3 @@ impl PieceColor {
         }
     }
 }
-
-mod behaviors;

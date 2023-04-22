@@ -1,9 +1,9 @@
-pub use backend::pieces;
-pub use backend::{moves::*, ChessError};
-mod backend;
+pub use game::pieces;
+pub use game::{moves::*, ChessError};
+mod game;
 mod frontend;
 
-pub use backend::{GameState, moves::{Field,Move}};
+pub use game::{GameState, moves::{Field,Move}};
 
 pub const DEFAULT_GAME_FEN: &str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

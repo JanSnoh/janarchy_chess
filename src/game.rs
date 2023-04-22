@@ -11,7 +11,7 @@ use std::{
 };
 
 use self::moves::{Castling, Field, Move};
-use crate::{backend::pieces::PieceColor, DEFAULT_GAME_FEN};
+use crate::{game::pieces::PieceColor, DEFAULT_GAME_FEN};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]

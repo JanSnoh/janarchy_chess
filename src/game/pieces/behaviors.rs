@@ -1,4 +1,4 @@
-use crate::backend::{
+use crate::game::{
     moves::{Field, Move},
     pieces::{Piece, PieceColor, PieceType},
     GameState,
