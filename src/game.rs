@@ -7,16 +7,16 @@ pub mod pieces;
 use core::fmt;
 use std::{
     collections::HashSet,
-    ops::{Index, IndexMut},
+    ops::{Index},
 };
 
-use self::moves::{Castling, Field, Move};
+use self::{moves::{Castling, Field, Move}, pieces::Piece};
 use crate::{game::pieces::PieceColor, DEFAULT_GAME_FEN};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct GameState {
-    pub fields: [Option<pieces::Piece>; 8 * 8],
+    fields: [Option<Piece>; 8 * 8],
     turn_color: pieces::PieceColor,
     castling_options: HashSet<Castling>, //CASTLING
     en_passant_target: Option<Field>,
@@ -54,6 +54,7 @@ impl Default for GameState {
 }
 
 impl GameState {
+    
     ///A move is doable if there is a piece to move, and it doesn't land on an ally square except special moves
     fn move_is_doable(&self, m: &Move) -> bool {
         let (origin, destination) = m.origin_and_destination();
@@ -85,7 +86,7 @@ impl GameState {
             return Err(ChessError::MoveError(move_in_question));
         }
 
-        self[destination] = self[origin].take();
+        *self.mut_at(destination) = self.mut_at(origin).take();
         self.move_end();
         Ok(())
     }
@@ -171,8 +172,8 @@ impl Index<Field> for GameState {
         &self.fields[index]
     }
 }
-impl IndexMut<Field> for GameState {
-    fn index_mut(&mut self, location: Field) -> &mut Self::Output {
+impl GameState {
+    fn mut_at(&mut self, location: Field) -> &mut Option<Piece> {
         let index: usize = location.0 + location.1 * 8;
         &mut self.fields[index]
     }

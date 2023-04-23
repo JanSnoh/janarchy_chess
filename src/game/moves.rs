@@ -9,7 +9,9 @@ static ASCII_UPPER: [char; 26] = [
     'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 ];
 
+
 #[derive(Copy, Clone, Default, PartialEq)]
+///A struct representing a Board position. The Format is X, Y.
 pub struct Field(pub usize, pub usize);
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

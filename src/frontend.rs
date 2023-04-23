@@ -1,5 +1,6 @@
 use crate::pieces::PieceColor;
 use crate::game::pieces::Piece;
+use crate::game::moves::Field;
 
 impl crate::GameState {
     pub fn print(&self, perspective: Option<PieceColor>) {
@@ -19,7 +20,7 @@ impl crate::GameState {
                 s = format!(
                     "{} {:#?}",
                     s,
-                    Piece::to_char(&self.fields[i * 8 + j])
+                    Piece::to_char(&self[Field(j, i)])
                 );
             }
             println!("{}", s);
