@@ -9,6 +9,7 @@ pub enum PieceColor {
     White,
 }
 #[derive(Debug, Clone, Copy)]
+#[non_exhaustive]
 pub enum PieceType {
     King,
     Queen,
