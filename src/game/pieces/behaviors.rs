@@ -129,13 +129,16 @@ fn pawn_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
 
 
     //diagonal takes
-    res.extend(
-    [(-1, color.to_int()), (1, color.to_int())].into_iter()
-        .filter_map(|x|origin.add_vec(x).ok())
-        .filter(|target|game_state[*target]
-        .map_or(false, |p|p.color==color))
-        .map(|target| Move::new(origin, target, true, None, false)));
     
+    let mut capture_moves: Vec<Move> = [(-1, color.to_int()), (1, color.to_int())].into_iter()
+    .filter_map(|x|origin.add_vec(x).ok())
+    .filter(|target|game_state[*target]
+        .map_or(false, |p|!(p.color==color)))
+    .map(|target| Move::new(origin, target, true, None, false))
+    .collect();
+    
+    res.append(&mut capture_moves);
     res
 }
 //etc ...
+

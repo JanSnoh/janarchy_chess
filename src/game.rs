@@ -97,11 +97,11 @@ impl GameState {
     pub fn contains_field(&self, Field(ref x, ref y): Field) -> bool {
         (0..8).contains(x) && (0..8).contains(y)
     }
-    pub fn moves_from(&self, origin: Field) -> Result<Vec<Move>, ChessError> {
-        let movee = self[origin].ok_or(ChessError::EmptyMoveOrigin)?;
+    pub fn moves_from(&self, origin: Field) -> Vec<Move> {
+        let Some(movee) = self[origin] else { return Vec::new() };
 
         let move_generator = pieces::piece_behavior(movee.piece_type);
-        Ok(move_generator(self, origin))
+        move_generator(self, origin)
     }
     pub fn possible_moves(&self, side: PieceColor) -> Vec<Move> {
         self.fields
@@ -109,7 +109,7 @@ impl GameState {
             .enumerate()
             .filter(|(_, x)| matches!(x, Some(x) if x.color==side))
             .map(|(i, _)| Field::from(i))
-            .filter_map(|sq| self.moves_from(sq).ok())
+            .map(|sq| self.moves_from(sq))
             .flatten()
             .collect()
     }
