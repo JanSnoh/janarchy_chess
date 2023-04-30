@@ -114,19 +114,21 @@ fn knight_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
 fn pawn_moves(game_state: &GameState, origin: Field) -> Vec<Move> {
     let color = game_state[origin].unwrap().color;
     let mut res = Vec::new();
-    let at_start = origin.1 == ((8+2*color.to_int()) as usize)%8;
+    let at_start = origin.1 == ((8+2*color.to_int()) as usize)%9;
     //straight moves
-    if let Ok(one_further) = origin.add_vec((0,color.to_int())) {
-        res.push(Move::from_squares(origin, one_further));
-        //double straight move
-        match origin.add_vec((0, color.to_int()*2)){ 
-            Ok(two_further) if at_start => {
-                res.push(Move::from_squares(origin, two_further));
-            },
-            _ => {}
-        }
-    }
 
+    match origin.add_vec((0,color.to_int())) {
+        Ok(one_further) if game_state[one_further].is_none() => {
+            res.push(Move::from_squares(origin, one_further));
+            //double straight move
+            match origin.add_vec((0, color.to_int()*2)){ 
+                Ok(two_further) if at_start && game_state[two_further].is_none() => 
+                    res.push(Move::from_squares(origin, two_further)),
+                _ => {}
+            }
+        }
+        _ => {}
+    }
 
     //diagonal takes
     
