@@ -81,7 +81,7 @@ fn draw_board(gs: &GameState, layout: LayoutData, texture_map: &HashMap<String, 
     //    let mouse = mouse_position();
     //    draw_texture_ex(texture.clone(), mouse.0, mouse.1, WHITE, draw_conf);
     //}
-
+    
     for field in GameState::iter_squares() {
         let (x, y) = (x_offset+field.0 as f32*field_size, y_offset+field.1 as f32*field_size);
         draw_rectangle(
@@ -105,6 +105,15 @@ fn draw_board(gs: &GameState, layout: LayoutData, texture_map: &HashMap<String, 
         }
     }
     if let Some(lift_field) = lifted {
+        for field in gs.moves_from(lift_field).into_iter().map(|m| m.origin_and_destination().1){
+            let (x, y) = (x_offset+field.0 as f32*field_size, y_offset+field.1 as f32*field_size);
+            draw_rectangle(
+                x,
+                y, 
+                field_size, 
+                field_size, 
+                GOLD);  
+        }
         let (mouse_x, mouse_y) = mouse_position();
         let lift_texture = *texture_map.get(&piece_string(gs[lift_field].unwrap())).unwrap();
         draw_texture_ex(lift_texture, mouse_x-field_size/2.0, mouse_y-field_size/2.0, WHITE, draw_conf);
@@ -156,15 +165,16 @@ fn input_handler(layout: LayoutData, lifted: &mut Option<Field>, game_state: &mu
         if is_mouse_button_pressed(MouseButton::Left) {
             dbg!(pos_to_field(mouse_position().into(), layout));
             dbg!(&lifted);
-            if let Some((lift_pos)) = lifted.clone() {
+            if let Some(lift_pos) = lifted.clone() {
                 let potential_move = Move::from_squares(lift_pos, hov_field);
-                if game_state.possible_moves(PieceColor::White).contains(&potential_move){
+                if game_state.moves_from(lift_pos).contains(&potential_move){
                     dbg!(potential_move.clone());
                     game_state.apply_move(potential_move);
                     *lifted = None;
                 }
             } else if let Some(_) = game_state[hov_field] {
-                *lifted = Some((hov_field));
+                *lifted = Some(hov_field);
+                dbg!(game_state.moves_from(hov_field));
             }
             
         }
