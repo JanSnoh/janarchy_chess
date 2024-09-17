@@ -1,4 +1,4 @@
-pub(crate) use behaviors::{piece_behavior};
+pub(crate) use behaviors::piece_behavior;
 
 mod behaviors;
 

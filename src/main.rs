@@ -2,10 +2,10 @@
 //use crate::backend::moves::Field;
 
 
-use std::{borrow::Cow, thread::{Thread, self}, collections::HashMap, fs::read_dir, io};
+use std::{borrow::Cow, collections::HashMap, fs::read_dir};
 
-use janarchy_chess::{GameState, pieces::{self, Piece, PieceColor}, Field, Move};
-use macroquad::{prelude::*, ui::{self, UiContent, root_ui}, rand::ChooseRandom, experimental::collections::storage};
+use janarchy_chess::{pieces::{self, Piece}, Field, GameState, Move};
+use macroquad::{prelude::*, ui::{self, UiContent, root_ui}, rand::ChooseRandom};
 
 //static mut FIELD_SIZE: f32 = 8.0;
 
@@ -68,7 +68,7 @@ async fn main() {
 
 ///X Y pos and side length plus fs 
 fn draw_board(gs: &GameState, layout: LayoutData, texture_map: &HashMap<String, Texture2D>, 
-    draw_conf: &DrawTextureParams, lifted: Option<(Field)>) {
+    draw_conf: &DrawTextureParams, lifted: Option<Field>) {
 
     let LayoutData{x: x_offset, y: y_offset, field_size} = layout;
     let draw_conf = DrawTextureParams{ 
@@ -143,7 +143,6 @@ fn field_to_color(field: Field) -> Color {  if (field.0+field.1)%2 == 0 { WHITE 
 
 
 fn piece_string(piece: Piece) -> String{
-    let out = String::new();
     let type_name = match piece.piece_type {
         pieces::PieceType::King => "king",
         pieces::PieceType::Queen => "queen",

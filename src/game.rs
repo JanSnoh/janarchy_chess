@@ -7,7 +7,7 @@ pub mod pieces;
 use core::fmt;
 use std::{
     collections::HashSet,
-    ops::{Index},
+    ops::Index,
 };
 
 use self::{moves::{Castling, Field, Move}, pieces::Piece};
