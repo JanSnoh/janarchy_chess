@@ -14,6 +14,7 @@ static ASCII_UPPER: [char; 26] = [
 ///A struct representing a Board position. The Format is X, Y.
 pub struct Field(pub usize, pub usize);
 
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Castling {
     KingBlack,
@@ -22,7 +23,7 @@ pub enum Castling {
     QueenWhite,
 }
 
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, Default)]
 pub struct Move {
     origin: Field,
     target: Field,
@@ -65,7 +66,11 @@ impl Move {
     }
 }
 
-
+impl PartialEq for Move {
+    fn eq(&self, other: &Self) -> bool {
+        self.origin == other.origin && self.target == other.target
+    }
+}
 
 impl Field {
     pub fn add_vec(&self, other: (i8, i8)) -> Result<Self, ChessError> {

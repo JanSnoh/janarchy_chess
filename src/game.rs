@@ -182,10 +182,10 @@ impl GameState {
 impl fmt::Display for ChessError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self {
-            ChessError::MoveError(mov) => write!(f, "Move '{}' is invalid!", mov.to_str()),
             ChessError::LoadError(msg) => write!(f, "{}", msg),
             ChessError::OutOfBounds => write!(f, "Field is out of Bounds!"),
             ChessError::EmptyMoveOrigin => write!(f, "Can't move out of an empty Square"),
+            ChessError::MoveError(mov) => write!(f, "Move '{}' is invalid!", mov.to_str()),
         }
     }
 }

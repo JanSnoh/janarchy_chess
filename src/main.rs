@@ -112,8 +112,8 @@ fn draw_board(gs: &GameState, layout: LayoutData, texture_map: &HashMap<String, 
                 y, 
                 field_size, 
                 field_size, 
-                GOLD);  
-        }
+                Color { r: 1.0, g: 0.6, b: 0.0, a: 0.5 });  
+        } 
         let (mouse_x, mouse_y) = mouse_position();
         let lift_texture = *texture_map.get(&piece_string(gs[lift_field].unwrap())).unwrap();
         draw_texture_ex(lift_texture, mouse_x-field_size/2.0, mouse_y-field_size/2.0, WHITE, draw_conf);
